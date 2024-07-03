@@ -1,6 +1,8 @@
 from argparse import ArgumentParser
 import logging
-
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
 
 """
 usage:
@@ -11,7 +13,14 @@ for example:
 
 """
 
+
 # implement here your load,preprocess,train,predict,save functions (or any other design you choose)
+def load_data(path):
+    return pd.read_csv(path, encoding='ISO-8859-8')
+
+#def preprocess_data(df):
+
+
 
 
 if __name__ == '__main__':
@@ -25,6 +34,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # 1. load the training set (args.training_set)
+    # Load and preprocess training data
+    logging.info("loading and preprocessing train...")
+    train_data = load_data(args.training_set)
+
     # 2. preprocess the training set
     logging.info("preprocessing train...")
 

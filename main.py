@@ -18,8 +18,6 @@ for example:
 def load_data(path):
     return pd.read_csv(path, encoding='ISO-8859-8')
 
-#def preprocess_data(df):
-
 
 
 

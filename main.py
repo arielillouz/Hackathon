@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 import logging
 
+import pandas as pd
 
 """
 usage:
@@ -14,6 +15,19 @@ for example:
 # implement here your load,preprocess,train,predict,save functions (or any other design you choose)
 
 
+def load_data(filename:str) ->pd.DataFrame:
+    """
+    :param filename:
+    :return:
+    """
+    data_frame = pd.read_csv(filename)
+    # Drop rows with any missing values and drop duplicates
+    data_frame.dropna(inplace=True)
+    data_frame.drop_duplicates(inplace=True)
+
+    return data_frame
+
+
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--training_set', type=str, required=True,
@@ -25,6 +39,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # 1. load the training set (args.training_set)
+    data_frame = load_data(args.training_set)
     # 2. preprocess the training set
     logging.info("preprocessing train...")
 

@@ -7,6 +7,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 
+from subtask1_plots import loss_over_percentage
 
 """
 usage:
@@ -65,7 +66,7 @@ if __name__ == '__main__':
     train_data = load_data(args.training_set)
 
     # Sample 5% of the data for the baseline
-    sampled_data = train_data.sample(frac=0.05, random_state=42)
+    sampled_data = train_data.sample(frac=0.4, random_state=42)
 
     # 2. preprocess the training set
     logging.info("preprocessing train...")
@@ -140,3 +141,4 @@ if __name__ == '__main__':
     logging.info(f"Saving predictions to {args.out}...")
     predictions = test_data[['trip_id_unique_station', 'passengers_up']]
     save_predictions(predictions, args.out)
+    loss_over_percentage(X_train, y_train, X_val, y_val)

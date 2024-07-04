@@ -1,11 +1,14 @@
 from argparse import ArgumentParser
 import logging
 import pandas as pd
+from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+
+
 
 """
 usage:
@@ -188,6 +191,45 @@ def feature_evaluation(X: pd.DataFrame, y: pd.Series, output_path: str = "."):
         plt.close()
 
 
+def plot_histogram(df, column, title, xlabel, ylabel, filename):
+    plt.figure(figsize=(10, 6))
+    df[column].plot(kind='hist', bins=50, edgecolor='k', alpha=0.7)
+    plt.yscale('log')
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.grid(True)
+    plt.savefig(filename)
+    plt.close()
+
+
+def plot_bar(actual, predicted, title, xlabel, ylabel, filename, num_samples=50):
+    samples = list(range(min(num_samples, len(actual))))
+    plt.figure(figsize=(12, 8))
+    width = 0.35  # the width of the bars
+    plt.bar(samples, actual[:num_samples], width, label='Actual')
+    plt.bar([s + width for s in samples], predicted[:num_samples], width, label='Predicted')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
+    plt.legend()
+    plt.savefig(filename)
+    plt.close()
+
+
+def plot_loss_scatter(actual, predicted, title, xlabel, ylabel, filename):
+    mse_values = (actual - predicted) ** 2
+    plt.figure(figsize=(10, 6))
+    plt.scatter(range(len(mse_values)), mse_values, alpha=0.7, edgecolor='k')
+    plt.yscale('log')
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.grid(True)
+    plt.savefig(filename)
+    plt.close()
+
+
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--training_set', type=str, required=True,
@@ -226,6 +268,26 @@ if __name__ == '__main__':
     X_train = train_data.drop(columns=['passengers_up'])  # Replace 'passengers_up' with your actual target column name
     y_train = train_data['passengers_up']  # Replace 'passengers_up' with your actual target column name
     feature_evaluation(X_train, y_train, output_path="feature_evaluation_plots")
+
+    # Plot the distribution of passengers_up in the training data
+    # Plot the distribution of passengers_up in the training data
+    plot_histogram(train_data, 'passengers_up', 'Distribution of Passengers Up in Training Data', 'Passengers Up',
+                   'Frequency', 'passengers_up_distribution.png')
+
+    # Generate baseline predictions on the validation set
+    val_predictions = create_baseline_predictions(val_data, mean_passengers_up, 'trip_id_unique_station',
+                                                  'passengers_up')
+
+    # Plot baseline predictions vs actual values using a bar plot
+    plot_bar(val_data['passengers_up'], val_predictions['passengers_up'], 'Baseline Predictions vs Actual Values',
+             'Samples', 'Passengers Up', 'baseline_vs_actual.png')
+
+    # Plot baseline loss as a scatter plot
+    plot_loss_scatter(val_data['passengers_up'], val_predictions['passengers_up'], 'Baseline Loss', 'Sample Index',
+                      'Squared Error', 'baseline_loss_scatter.png')
+
+    # Evaluate baseline predictions
+    mse = mean_squared_error(val_data['passengers_up'], val_predictions['passengers_up'])
 
     # 4. load the test set (args.test_set)
     test_data_full = load_data(args.test_set)

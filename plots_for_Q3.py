@@ -81,3 +81,25 @@ ax2.tick_params(axis='y', labelcolor=color)
 fig.tight_layout(rect=[0, 0.03, 1, 0.95])  # Adjust the plot to fit the title
 plt.title('Public Transportation Usage and Number of Different Lines in Each Region')
 plt.show()
+
+# Calculate the total number of passengers for each line
+line_total_passengers = data.groupby('line_id')['total_passengers'].sum().reset_index()
+top_n_lines = line_total_passengers.nlargest(10, 'total_passengers')['line_id']
+
+# Filter the data to include only the top N lines
+top_n_data = data[data['line_id'].isin(top_n_lines)]
+
+# Aggregate data by line and hour to get the total passengers
+top_n_utilization = top_n_data.groupby(['line_id', 'hour'])['total_passengers'].sum().reset_index()
+
+# Plot utilization for the top N lines over time
+plt.figure(figsize=(14, 8))
+for line in top_n_utilization['line_id'].unique():
+    line_data = top_n_utilization[top_n_utilization['line_id'] == line]
+    plt.plot(line_data['hour'], line_data['total_passengers'], label=f'Line {line}')
+plt.xlabel('Hour of the Day')
+plt.ylabel('Total Passengers')
+plt.title('Top 10 Line Utilization Over Time')
+plt.legend()
+plt.grid(True)
+plt.show()

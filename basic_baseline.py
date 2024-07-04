@@ -140,7 +140,6 @@ if __name__ == '__main__':
 
     # Evaluate baseline predictions
     mse = mean_squared_error(val_data['passengers_up'], val_predictions['passengers_up'])
-    print(mse)
 
     # 4. load the test set (args.test_set)
     test_data_full = load_data(args.test_set)

@@ -287,4 +287,3 @@ if __name__ == '__main__':
     # Save predictions
     logging.info(f"Saving predictions to {args.out}...")
     save_predictions(predictions, args.out, real_test_data)
-

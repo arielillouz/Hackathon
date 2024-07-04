@@ -96,27 +96,6 @@ def preprocess_test(df):
 
     df['cluster'] = df['cluster'].astype('category').cat.codes
 
-    # Calculate trip duration in minutes
-    #trip_durations = df.groupby('trip_id_unique')['arrival_time'].first()
-    ##trip_durations['trip_duration_in_minutes'] = (trip_durations['max'] -
-                                                  #trip_durations[
-                                                   #   'min']).dt.total_seconds() / 60
-
-    # # Calculate the average of passengers up and passengers continuing
-    # trip_durations['avg_passengers_up'] = df.groupby('trip_id_unique')[
-    #     'passengers_up'].mean()
-    # trip_durations['avg_passengers_continue'] = df.groupby('trip_id_unique')[
-    #     'passengers_continue'].mean()
-    #
-    # # Extract direction and alternative information
-    # trip_durations['direction'] = df.groupby('trip_id_unique')[
-    #     'direction'].first()
-    # trip_durations['alternative'] = df.groupby('trip_id_unique')[
-    #     'alternative'].first()
-    #
-    # # Reset index to convert the groupby index (trip_id) into a column
-    # trip_durations.reset_index(inplace=True)
-
     # Select desired columns for the new table
     trip_durations = df[
         ['trip_id_unique', 'direction',
@@ -184,50 +163,6 @@ def save_predictions(predictions, output_path, test_data):
     output_df.to_csv(output_path, index=False)
 
 
-def loss_over_percentage(train_data: pd.DataFrame, y_train: pd.Series,
-                         test_samples: pd.DataFrame, y_test: pd.Series):
-    model = LinearRegression()
-    loss = np.zeros((91, 10))
-
-    for p in range(10, 101):
-        print(f"p: {p}")
-        for i in range(10):
-            processed_samples = train_data.sample(frac=p / 100,
-                                                  axis="index",
-                                                  random_state=50 + i)
-            responses = y_train.loc[processed_samples.index]
-            model.fit(processed_samples, responses)
-            predictions = model.predict(test_samples)
-            loss_res = mean_squared_error(y_test, predictions)
-            loss[p - 10, i] = loss_res
-
-    loss_over_percentage_plots(loss)
-
-
-def loss_over_percentage_plots(loss: np.ndarray):
-    mean_loss = np.mean(loss, axis=1)
-    std_loss = np.std(loss, axis=1)
-    p_array = np.arange(10, 101)
-
-    plt.figure(figsize=(10, 6))
-    plt.plot(p_array, mean_loss, label="Mean Loss", color="green",
-             linestyle="--", marker="o")
-    plt.fill_between(p_array, mean_loss - 2 * std_loss,
-                     mean_loss + 2 * std_loss, color="lightgrey",
-                     alpha=0.5)
-
-    plt.title("Loss vs Sample Percentage")
-    plt.xlabel("Percentage of Training Data Used")
-    plt.ylabel("Mean Loss with Confidence Interval")
-    plt.legend()
-    plt.grid(True)
-
-    # plot_filename = "Loss_vs_Sample_Percentage.png"
-    # plt.savefig(plot_filename)
-    # plt.close()
-    plt.show()
-
-
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--training_set', type=str, required=True,
@@ -281,8 +216,6 @@ if __name__ == '__main__':
     # predictions = predict(model, X_test)
     # mse = mean_squared_error(true_values, predictions)
     # print(mse)
-    # #plot
-    # loss_over_percentage(X_train, y_train, X_test, true_values)
 
     # Save predictions
     logging.info(f"Saving predictions to {args.out}...")

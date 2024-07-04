@@ -46,19 +46,6 @@ def preprocess_data(data_frame: pd.DataFrame) -> pd.DataFrame:
     return data_frame
 
 
-def calculate_mean(df, column):
-    return df[column].mean()
-
-
-def create_baseline_predictions(test_data, mean_value, id_column,
-                                prediction_column):
-    predictions = pd.DataFrame({
-        id_column: test_data[id_column],
-        prediction_column: mean_value
-    })
-    return predictions
-
-
 def save_predictions(predictions, path):
     predictions.to_csv(path, index=False)
 

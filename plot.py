@@ -41,7 +41,4 @@ def loss_over_percentage_plots(loss: np.ndarray):
     plt.legend()
     plt.grid(True)
 
-    # plot_filename = "Loss_vs_Sample_Percentage.png"
-    # plt.savefig(plot_filename)
-    # plt.close()
     plt.show()
